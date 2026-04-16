@@ -16,6 +16,23 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Artifacts
+
+### LLMeter (`artifacts/llmeter`)
+- **Kind**: react-vite web app
+- **Preview path**: `/`
+- **Stack**: React + Vite, Tailwind CSS, Zustand, Wouter
+- **Description**: Browser-side LLM compatibility benchmark tool. No backend.
+  - Real micro-benchmarks: JS Compute (Math.fround loop), Memory Bandwidth (Float32Array), IndexedDB Storage
+  - Device detection: RAM (with Safari/Firefox fallback modal), CPU cores, GPU (WebGL2/WebGPU), OS, arch, battery
+  - Scoring engine: base_score * real_perf_factor
+  - Full model table with quant profiles (TinyLlama → Llama 3.1 13B)
+  - Ollama integration with CORS guidance
+  - Loading Strategy Planner
+  - Share URLs (base64 encoded, <2000 chars)
+  - Benchmark history (localStorage, last 10 runs)
+  - Compare mode (model vs model)
+
 ## Key Commands
 
 - `pnpm run typecheck` — full typecheck across all packages
