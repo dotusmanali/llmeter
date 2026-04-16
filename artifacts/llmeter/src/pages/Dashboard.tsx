@@ -3,9 +3,11 @@ import { useBenchmark } from "../hooks/useBenchmark";
 import { ScoreGauge } from "../components/ScoreGauge";
 import { RamModal } from "../components/RamModal";
 import { WarningBanner } from "../components/WarningBanner";
-import { computeFits, getBestRecommendations, MODELS } from "../lib/models";
+import { computeFits, getBestRecommendations } from "../lib/models";
 import { computeFeatures } from "../lib/features";
 import { FeatureFlagsGrid } from "../components/FeatureFlags";
+import { CopyButton } from "../components/CopyButton";
+import { downloadJSON, downloadText, formatFullReport } from "../lib/export";
 
 const TIER_DESC: Record<string, string> = {
   Powerhouse: "Runs 13B+ models comfortably",
@@ -72,22 +74,55 @@ export default function Dashboard() {
     );
   }
 
+  const handleDownloadJSON = () => {
+    if (!lastRun) return;
+    downloadJSON(lastRun, `llmeter-${lastRun.id}.json`);
+  };
+
+  const handleDownloadText = () => {
+    if (!lastRun) return;
+    downloadText(formatFullReport(lastRun), `llmeter-${lastRun.id}.txt`);
+  };
+
+  const reportText = lastRun ? formatFullReport(lastRun) : "";
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-white">Device Benchmark</h1>
-        <p className="text-[#64748b] text-sm mt-1">
-          Run real micro-benchmarks to see which LLMs your device can handle.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Device Benchmark</h1>
+          <p className="text-[#64748b] text-sm mt-1">
+            Run real micro-benchmarks to see which LLMs your device can handle.
+          </p>
+        </div>
+        {done && lastRun && (
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <CopyButton
+              text={reportText}
+              label="Copy Report"
+              className="px-3 py-1.5 text-xs border border-[#1f1f1f] text-[#64748b] hover:text-white rounded-lg"
+            />
+            <button
+              onClick={handleDownloadText}
+              className="px-3 py-1.5 text-xs border border-[#1f1f1f] text-[#64748b] hover:text-white rounded-lg transition-colors"
+            >
+              .txt
+            </button>
+            <button
+              onClick={handleDownloadJSON}
+              className="px-3 py-1.5 text-xs border border-[#1f1f1f] text-[#64748b] hover:text-white rounded-lg transition-colors"
+            >
+              .json
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Warnings */}
-      {warnings.length > 0 && (
-        <div className="space-y-2">{warnings}</div>
-      )}
+      {warnings.length > 0 && <div className="space-y-2">{warnings}</div>}
 
-      {/* Run button / idle state */}
+      {/* Idle */}
       {phase === "idle" && (
         <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-8 flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-[#1f1f1f] flex items-center justify-center mb-2">
@@ -105,14 +140,13 @@ export default function Dashboard() {
           </button>
           {lastRun && (
             <p className="text-xs text-[#333]">
-              Last run: {new Date(lastRun.timestamp).toLocaleDateString()} — score{" "}
-              {lastRun.final_score}
+              Last run: {new Date(lastRun.timestamp).toLocaleDateString()} — score {lastRun.final_score}
             </p>
           )}
         </div>
       )}
 
-      {/* Running state */}
+      {/* Running */}
       {running && (
         <div className="bg-[#111] border border-[#1f1f1f] rounded-xl p-8">
           <BenchmarkProgress />
@@ -134,17 +168,11 @@ export default function Dashboard() {
                   <span className="text-xs text-[#64748b]">({tps?.path})</span>
                 </span>
                 <span className="text-[#64748b]">Perf factor</span>
-                <span className="font-mono text-white">
-                  {perf.real_perf_factor.toFixed(2)}×
-                </span>
+                <span className="font-mono text-white">{perf.real_perf_factor.toFixed(2)}×</span>
                 <span className="text-[#64748b]">Memory bandwidth</span>
-                <span className="font-mono text-white">
-                  {perf.memory.bandwidth_gb_s.toFixed(1)} GB/s
-                </span>
+                <span className="font-mono text-white">{perf.memory.bandwidth_gb_s.toFixed(1)} GB/s</span>
                 <span className="text-[#64748b]">CPU ops/sec</span>
-                <span className="font-mono text-white">
-                  {(perf.cpu.ops_per_sec / 1000).toFixed(1)}k
-                </span>
+                <span className="font-mono text-white">{(perf.cpu.ops_per_sec / 1000).toFixed(1)}k</span>
                 <span className="text-[#64748b]">IndexedDB read</span>
                 <span className="font-mono text-white">
                   {perf.storage.read_mb_s.toFixed(0)} MB/s{" "}
@@ -168,6 +196,38 @@ export default function Dashboard() {
               value={device.webgpu_available ? "WebGPU" : device.webgl2_available ? "WebGL2" : "None"}
               sub={device.unified_memory ? "Unified Memory" : undefined}
             />
+          </div>
+
+          {/* Score breakdown */}
+          <div className="bg-[#111] border border-[#1f1f1f] rounded-xl overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-[#1f1f1f] flex items-center justify-between">
+              <p className="text-xs font-mono text-[#64748b] uppercase tracking-wider">Score Breakdown</p>
+              <CopyButton
+                text={`Score: ${score.final_score}/100 | RAM: ${score.ram_pts}/40 | CPU: ${score.cpu_pts}/20 | Arch: ${score.arch_pts}/15 | Accel: ${score.accel_pts}/15 | GPU: ${score.gpu_pts}/10`}
+                label="Copy"
+                className="text-xs text-[#64748b] hover:text-white px-2 py-1 rounded border border-[#1f1f1f]"
+              />
+            </div>
+            <div className="px-4 py-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+              {[
+                { label: "RAM", pts: score.ram_pts, max: 40 },
+                { label: "CPU", pts: score.cpu_pts, max: 20 },
+                { label: "Arch", pts: score.arch_pts, max: 15 },
+                { label: "Accel", pts: score.accel_pts, max: 15 },
+                { label: "GPU", pts: score.gpu_pts, max: 10 },
+              ].map(({ label, pts, max }) => (
+                <div key={label}>
+                  <p className="text-xs text-[#64748b] mb-1">{label}</p>
+                  <p className="font-mono text-sm text-white">{pts}<span className="text-[#333]">/{max}</span></p>
+                  <div className="mt-1.5 h-1 bg-[#1a1a1a] rounded overflow-hidden">
+                    <div
+                      className="h-full bg-[#22c55e] rounded"
+                      style={{ width: `${(pts / max) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Recommendations */}
@@ -200,6 +260,32 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Likely to run */}
+          {fits.filter((f) => f.fit === "likely").length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-[#64748b] uppercase tracking-wider">
+                  Models Likely to Run
+                </h3>
+                <CopyButton
+                  text={fits.filter((f) => f.fit === "likely").map((f) => `${f.model.name} ${f.key} (${f.ram_gb}GB)`).join("\n")}
+                  label="Copy list"
+                  className="text-xs text-[#64748b] hover:text-white px-2 py-1 rounded border border-[#1f1f1f]"
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {fits.filter((f) => f.fit === "likely").map((f) => (
+                  <span
+                    key={`${f.model.name}-${f.key}`}
+                    className="text-sm px-3 py-1.5 rounded-lg bg-green-950/30 border border-green-800/30 text-green-400 font-mono"
+                  >
+                    {f.model.name} <span className="text-green-600">{f.key}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Feature flags */}
           {features && (
             <div>
@@ -210,19 +296,18 @@ export default function Dashboard() {
             </div>
           )}
 
-          <button
-            onClick={run}
-            className="text-sm text-[#64748b] hover:text-white transition-colors"
-          >
-            Run again →
-          </button>
+          <div className="flex items-center gap-4 pt-2 border-t border-[#1a1a1a]">
+            <button
+              onClick={run}
+              className="text-sm text-[#64748b] hover:text-white transition-colors"
+            >
+              Run again →
+            </button>
+          </div>
         </>
       )}
 
-      <RamModal
-        open={needsRamModal}
-        onSelect={(gb) => continueAfterRam(gb)}
-      />
+      <RamModal open={needsRamModal} onSelect={(gb) => continueAfterRam(gb)} />
     </div>
   );
 }
@@ -268,9 +353,7 @@ function BenchmarkProgress() {
                   {step.label}
                 </span>
                 {active && step.key === "cpu" && (
-                  <span className="text-xs font-mono text-[#64748b]">
-                    {Math.round(cpuProgress)}%
-                  </span>
+                  <span className="text-xs font-mono text-[#64748b]">{Math.round(cpuProgress)}%</span>
                 )}
                 {done && <span className="text-xs text-[#22c55e]">✓</span>}
               </div>

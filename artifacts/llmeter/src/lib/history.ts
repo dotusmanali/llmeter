@@ -1,3 +1,29 @@
+import type { DeviceInfo } from "./detection";
+import type { BenchmarkResult } from "./benchmark";
+
+export interface ModelFitSummary {
+  model: string;
+  quant: string;
+  ram_gb: number;
+  quality: string;
+  fit: "likely" | "maybe" | "no";
+  failure_probability: number;
+}
+
+export interface ScoreBreakdown {
+  base_score: number;
+  ram_pts: number;
+  cpu_pts: number;
+  arch_pts: number;
+  accel_pts: number;
+  gpu_pts: number;
+}
+
+export interface TpsInfo {
+  path: "GPU" | "CPU";
+  limiting_factor: string;
+}
+
 export interface BenchmarkRun {
   id: string;
   timestamp: number;
@@ -11,6 +37,12 @@ export interface BenchmarkRun {
   tps_high: number;
   top_fits: string[];
   perf_factor?: number;
+  // Full detail fields
+  device_info?: DeviceInfo;
+  perf_raw?: BenchmarkResult;
+  all_fits?: ModelFitSummary[];
+  score_breakdown?: ScoreBreakdown;
+  tps_info?: TpsInfo;
 }
 
 const KEY = "llmeter_history";
