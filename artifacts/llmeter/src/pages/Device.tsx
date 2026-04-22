@@ -10,7 +10,7 @@ function buildDeviceText(device: ReturnType<typeof useBenchmarkStore>["device"],
   if (!device) return "";
   return `DEVICE INFO
 ${"─".repeat(40)}
-RAM           : ${effectiveRam ?? "N/A"} GB (${device.ram_source === "manual" ? "user-selected" : "browser estimate"})
+RAM           : ${effectiveRam !== null ? (device.ram_source === "manual" ? `${effectiveRam} GB (user-selected)` : (device.ram_heuristic_applied ? `~${effectiveRam} GB estimated` : `~${effectiveRam} GB (browser estimate, actual may be higher)`)) : "N/A"}
 CPU Cores     : ${device.cores}
 Architecture  : ${device.arch}
 OS            : ${device.os}
@@ -108,7 +108,7 @@ export default function Device() {
           >
             <Row
               label="System RAM"
-              value={effectiveRam !== null ? `${effectiveRam} GB` : "Not available"}
+              value={effectiveRam !== null ? (device.ram_source === "manual" ? `${effectiveRam} GB` : (device.ram_heuristic_applied ? `~${effectiveRam} GB estimated` : `~${effectiveRam} GB (browser estimate, actual may be higher)`)) : "Not available"}
               copyVal={effectiveRam !== null ? `${effectiveRam} GB` : ""}
             />
             <Row
@@ -116,7 +116,7 @@ export default function Device() {
               value={
                 device.ram_source === "manual"
                   ? "User-selected"
-                  : "navigator.deviceMemory (browser estimate)"
+                  : (device.ram_heuristic_applied ? "Heuristic applied" : "navigator.deviceMemory (browser estimate)")
               }
               muted
             />

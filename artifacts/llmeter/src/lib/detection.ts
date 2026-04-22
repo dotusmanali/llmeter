@@ -21,6 +21,7 @@ export interface DeviceInfo {
   screen_height: number;
   device_pixel_ratio: number;
   user_agent: string;
+  ram_heuristic_applied: boolean;
 }
 
 function detectOS(ua: string): string {
@@ -76,12 +77,38 @@ function detectGPU(): { renderer: string; vendor: string; webgl2: boolean } {
 export async function detectDevice(): Promise<DeviceInfo> {
   const ua = navigator.userAgent;
   const os = detectOS(ua);
-  const arch = detectArch(ua);
+  let arch = detectArch(ua);
 
   const { renderer, vendor, webgl2 } = detectGPU();
 
+  if (os === 'Android') {
+    if (
+      vendor === 'ARM' ||
+      renderer.includes('Mali') ||
+      renderer.includes('Adreno') ||
+      renderer.includes('PowerVR') ||
+      renderer.includes('Immortalis')
+    ) {
+      arch = 'arm64';
+    }
+  }
+
   const cores = navigator.hardwareConcurrency || 2;
-  const rawMem = (navigator as { deviceMemory?: number }).deviceMemory;
+  let rawMem = (navigator as { deviceMemory?: number }).deviceMemory;
+  let ram_heuristic_applied = false;
+
+  if (
+    typeof rawMem === "number" &&
+    (renderer.includes('Mali') || 
+     renderer.includes('Adreno') || 
+     vendor === 'ARM') &&
+    cores >= 8 &&
+    rawMem === 4
+  ) {
+    rawMem = 6;
+    ram_heuristic_applied = true;
+  }
+
   const ram_gb = typeof rawMem === "number" ? rawMem : null;
 
   const is_apple_silicon =
@@ -106,7 +133,8 @@ export async function detectDevice(): Promise<DeviceInfo> {
   }
 
   const wasm_supported = typeof WebAssembly === "object";
-  const simd_supported = detectSIMD();
+  let simd_supported = detectSIMD();
+  simd_supported = simd_supported || (arch === 'arm64');
   const threads_supported = typeof SharedArrayBuffer !== "undefined";
 
   let battery_level: number | null = null;
@@ -147,5 +175,6 @@ export async function detectDevice(): Promise<DeviceInfo> {
     screen_height: screen.height,
     device_pixel_ratio: window.devicePixelRatio,
     user_agent: ua,
+    ram_heuristic_applied,
   };
 }

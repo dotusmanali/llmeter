@@ -118,10 +118,21 @@ export function computePerfFactor(
 ): { cpu_factor: number; mem_factor: number; disk_factor: number; real_perf_factor: number } {
   // disk_factor baseline uses 150 MB/s to reflect IPC/IndexedDB overhead realism
   // (raw NVMe is 3000+ but browser IPC bottleneck caps measurable throughput)
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  const mem_min  = isMobile ? 0.55 : 0.40;
+
   const cpu_factor = clamp(cpu_ops / 50000, 0.5, 2.0);
-  const mem_factor = clamp(bandwidth / 20.0, 0.4, 1.8);
+  const mem_factor = clamp(bandwidth / 20.0, mem_min, 1.8);
   const disk_factor = clamp(read_mb_s / 150, 0.3, 1.5);
-  const real_perf_factor =
+  
+  let real_perf_factor =
     cpu_factor * 0.5 + mem_factor * 0.35 + disk_factor * 0.15;
+    
+  if (isMobile) {
+    real_perf_factor = (cpu_factor * 0.45) + 
+                       (mem_factor * 0.40) + 
+                       (disk_factor * 0.15);
+  }
+  
   return { cpu_factor, mem_factor, disk_factor, real_perf_factor };
 }

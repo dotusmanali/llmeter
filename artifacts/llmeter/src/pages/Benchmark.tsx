@@ -35,7 +35,7 @@ Vendor       : ${device.gpu_vendor}
 WebGL2       : ${device.webgl2_available ? "Yes" : "No"}
 WebGPU       : ${device.webgpu_available ? "Yes" : "No"}
 
-RAM          : ${effectiveRam} GB (${device.ram_source === "manual" ? "user-selected" : "browser estimate"})`
+RAM          : ${effectiveRam !== null ? (device?.ram_source === "manual" ? `${effectiveRam} GB (user-selected)` : (device?.ram_heuristic_applied ? `~${effectiveRam} GB estimated` : `~${effectiveRam} GB (browser estimate, actual may be higher)`)) : "N/A"}`
     : "";
 
   return (
@@ -148,13 +148,13 @@ RAM          : ${effectiveRam} GB (${device.ram_source === "manual" ? "user-sele
             title="RAM"
             copyText={`RAM: ${effectiveRam} GB | Source: ${device?.ram_source === "manual" ? "user-selected" : "navigator.deviceMemory"}`}
           >
-            <Row label="System RAM" value={`${effectiveRam} GB`} copyVal={`${effectiveRam} GB`} />
+            <Row label="System RAM" value={device?.ram_source === "manual" ? `${effectiveRam} GB` : (device?.ram_heuristic_applied ? `~${effectiveRam} GB estimated` : `~${effectiveRam} GB (browser estimate, actual may be higher)`)} copyVal={`${effectiveRam} GB`} />
             <Row
               label="Source"
               value={
                 device?.ram_source === "manual"
                   ? "User-selected (browser API unavailable)"
-                  : "navigator.deviceMemory (browser estimate)"
+                  : (device?.ram_heuristic_applied ? "Heuristic applied" : "navigator.deviceMemory (browser estimate)")
               }
               muted
             />
