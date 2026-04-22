@@ -25,6 +25,10 @@ export interface BenchmarkState {
   effectiveRam: number | null;
   needsRamModal: boolean;
   lastRun: BenchmarkRun | null;
+  telemetry: {
+    cpu: number[];
+    memory: number[];
+  };
   setPhase: (phase: BenchmarkPhase) => void;
   setCpuProgress: (pct: number) => void;
   setDevice: (d: DeviceInfo | null) => void;
@@ -34,6 +38,7 @@ export interface BenchmarkState {
   setEffectiveRam: (gb: number) => void;
   setNeedsRamModal: (v: boolean) => void;
   setLastRun: (r: BenchmarkRun) => void;
+  addTelemetry: (type: "cpu" | "memory", val: number) => void;
   reset: () => void;
 }
 
@@ -47,6 +52,7 @@ export const useBenchmarkStore = create<BenchmarkState>((set) => ({
   effectiveRam: null,
   needsRamModal: false,
   lastRun: null,
+  telemetry: { cpu: [], memory: [] },
   setPhase: (phase) => set({ phase }),
   setCpuProgress: (cpuProgress) => set({ cpuProgress }),
   setDevice: (device) => set({ device }),
@@ -56,6 +62,13 @@ export const useBenchmarkStore = create<BenchmarkState>((set) => ({
   setEffectiveRam: (effectiveRam) => set({ effectiveRam }),
   setNeedsRamModal: (needsRamModal) => set({ needsRamModal }),
   setLastRun: (lastRun) => set({ lastRun }),
+  addTelemetry: (type, val) =>
+    set((state) => ({
+      telemetry: {
+        ...state.telemetry,
+        [type]: [...state.telemetry[type].slice(-29), val], // Keep last 30 points
+      },
+    })),
   reset: () =>
     set({
       phase: "idle",
@@ -66,5 +79,6 @@ export const useBenchmarkStore = create<BenchmarkState>((set) => ({
       tps: null,
       effectiveRam: null,
       needsRamModal: false,
+      telemetry: { cpu: [], memory: [] },
     }),
 }));

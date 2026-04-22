@@ -1,6 +1,10 @@
 {
   "name": "llmeter",
   "version": "1.0.0",
+  "description": "Local LLM Readiness Hardware Benchmark",
+  "author": "Usman Ali",
+  "license": "MIT",
+  "homepage": "https://dotusmanali.github.io/llmeter",
   "private": true,
   "type": "module",
   "scripts": {

@@ -13,19 +13,34 @@ function clamp(val: number, min: number, max: number): number {
 }
 
 export async function runCPUBenchmark(
-  onProgress?: (pct: number) => void
+  onProgress?: (pct: number) => void,
+  onTelemetry?: (opsPerSec: number) => void
 ): Promise<{ ops_per_sec: number }> {
   const duration = 3000;
   const start = performance.now();
   let ops = 0;
+  let lastTick = start;
+  let lastOps = 0;
 
   return new Promise((resolve) => {
     function tick() {
-      const elapsed = performance.now() - start;
+      const now = performance.now();
+      const elapsed = now - start;
+      
       if (elapsed >= duration) {
         resolve({ ops_per_sec: ops / (elapsed / 1000) });
         return;
       }
+
+      // Sample telemetry every ~100ms
+      const tickElapsed = now - lastTick;
+      if (tickElapsed >= 100) {
+        const tickOps = ops - lastOps;
+        onTelemetry?.(tickOps / (tickElapsed / 1000));
+        lastTick = now;
+        lastOps = ops;
+      }
+
       for (let i = 0; i < 100000; i++) {
         Math.fround(i * 1.23456);
       }
@@ -37,16 +52,32 @@ export async function runCPUBenchmark(
   });
 }
 
-export async function runMemoryBenchmark(): Promise<{ bandwidth_gb_s: number }> {
-  const SIZE = 32 * 1024 * 1024;
-  const buf = new Float32Array(SIZE);
+export async function runMemoryBenchmark(
+  onTelemetry?: (gbps: number) => void
+): Promise<{ bandwidth_gb_s: number }> {
+  const CHUNK_SIZE = 8 * 1024 * 1024; // 8MB chunks
+  const CHUNKS = 8;
+  const totalBytes = CHUNK_SIZE * CHUNKS;
+  const buf = new Float32Array(CHUNK_SIZE);
   buf.fill(1.0);
+  
   const start = performance.now();
-  let sum = 0;
-  for (let i = 0; i < buf.length; i++) sum += buf[i];
-  const elapsed = (performance.now() - start) / 1000;
-  void sum;
-  return { bandwidth_gb_s: (buf.byteLength / 1e9) / elapsed };
+  let totalElapsed = 0;
+
+  for (let c = 0; c < CHUNKS; c++) {
+    const chunkStart = performance.now();
+    let sum = 0;
+    for (let i = 0; i < buf.length; i++) sum += buf[i];
+    const chunkEnd = performance.now();
+    const chunkElapsed = (chunkEnd - chunkStart) / 1000;
+    totalElapsed += chunkElapsed;
+    onTelemetry?.((buf.byteLength / 1e9) / chunkElapsed);
+    void sum;
+    // Tiny yield to prevent UI freeze
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  return { bandwidth_gb_s: (totalBytes / 1e9) / totalElapsed };
 }
 
 function openIDB(name: string): Promise<IDBDatabase> {

@@ -39,10 +39,13 @@ export function useBenchmark() {
     store.setNeedsRamModal(false);
 
     store.setPhase("cpu");
-    const cpu = await runCPUBenchmark((pct) => store.setCpuProgress(pct));
+    const cpu = await runCPUBenchmark(
+      (pct) => store.setCpuProgress(pct),
+      (val) => store.addTelemetry("cpu", val)
+    );
 
     store.setPhase("memory");
-    const mem = await runMemoryBenchmark();
+    const mem = await runMemoryBenchmark((val) => store.addTelemetry("memory", val));
 
     store.setPhase("storage");
     const storage = await runStorageBenchmark();
