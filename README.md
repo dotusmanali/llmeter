@@ -32,7 +32,7 @@ No more downloading 15GB models only to find out they crash on load.
 
 - **Frontend:** React, Vite, Tailwind CSS, shadcn/ui
 - **State Management:** Zustand
-- **Architecture:** Monorepo using `pnpm` workspaces
+- **Architecture:** Clean, standalone Vite + React structure
 - **Design:** Premium Dark Mode UI, JetBrains Mono for data, Inter for typography
 
 ## 🚀 Getting Started
@@ -45,8 +45,8 @@ No more downloading 15GB models only to find out they crash on load.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/LLMeter.git
-   cd LLMeter
+   git clone https://github.com/dotusmanali/llmeter.git
+   cd llmeter
    ```
 
 2. **Install dependencies:**
