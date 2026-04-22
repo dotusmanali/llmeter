@@ -25,30 +25,37 @@ function Router() {
   
   return (
     <div className="relative z-10">
+      <div className="terminal-crt-lines" />
+      <div className="terminal-vignette" />
       <Nav />
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={location}
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 10 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="container mx-auto px-4 py-6"
-        >
-          <Switch>
-            <Route path="/" component={Dashboard} />
-            <Route path="/benchmark" component={Benchmark} />
-            <Route path="/device" component={Device} />
-            <Route path="/models" component={Models} />
-            <Route path="/planner" component={Planner} />
-            <Route path="/ollama" component={Ollama} />
-            <Route path="/compare" component={Compare} />
-            <Route path="/history" component={History} />
-            <Route path="/share" component={Share} />
-            <Route component={NotFound} />
-          </Switch>
-        </motion.main>
-      </AnimatePresence>
+      <main className="container mx-auto px-4 py-8 relative z-20">
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/benchmark" component={Benchmark} />
+          <Route path="/device" component={Device} />
+          <Route path="/models" component={Models} />
+          <Route path="/planner" component={Planner} />
+          <Route path="/ollama" component={Ollama} />
+          <Route path="/history" component={History} />
+          <Route path="/share" component={Share} />
+          <Route path="/compare" component={Compare} />
+          <Route>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+              <h1 className="text-4xl font-mono text-red-risk tracking-tighter">404_PAGE_NOT_FOUND</h1>
+              <p className="text-white/40 font-mono text-sm uppercase">Navigation node unavailable</p>
+              <a href="/llmeter/" className="text-[#22c55e] font-mono text-xs underline decoration-dotted underline-offset-4">Return_to_HQ</a>
+            </div>
+          </Route>
+        </Switch>
+      </main>
+      
+      <Toaster 
+        theme="dark" 
+        position="bottom-right"
+        toastOptions={{
+          className: "bg-[#0a0a0a] border border-[#1f1f1f] text-white font-mono text-xs",
+        }}
+      />
     </div>
   );
 }

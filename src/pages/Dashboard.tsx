@@ -171,6 +171,13 @@ export default function Dashboard() {
               <div className="absolute inset-0 bg-grid opacity-10" />
               <div className="scanline opacity-10" />
               
+              {/* Diagnostic Scan Laser */}
+              <motion.div 
+                animate={{ top: ["0%", "100%", "0%"] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                className="absolute left-0 right-0 h-[2px] bg-[#22c55e]/30 shadow-[0_0_15px_#22c55e] z-10 pointer-events-none"
+              />
+              
               <div className="relative group cursor-pointer" onClick={run}>
                 <div className="w-32 h-32 rounded-full border border-[#22c55e]/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                   <div className="absolute inset-0 rounded-full border border-[#22c55e]/10 animate-ping" />

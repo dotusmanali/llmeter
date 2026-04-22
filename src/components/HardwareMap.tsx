@@ -21,6 +21,15 @@ export function HardwareMap() {
       <div className="absolute inset-0 bg-grid opacity-10" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
       
+      {/* Thermal Stress Overlay */}
+      <motion.div 
+        animate={{ 
+          opacity: ["cpu", "memory", "gpu"].includes(phase) ? [0, 0.15, 0.05] : 0,
+          scale: ["cpu", "memory", "gpu"].includes(phase) ? [1, 1.2, 1] : 1
+        }}
+        className="absolute inset-0 bg-[radial-gradient(circle,rgba(239,68,68,0.2)_0%,transparent_70%)] pointer-events-none z-0"
+      />
+      
       <svg viewBox="0 0 400 240" className="w-full h-full relative z-10 drop-shadow-[0_0_15px_rgba(34,197,94,0.05)]">
         {/* Motherboard Base with Blueprint Grid */}
         <rect x="20" y="20" width="360" height="200" rx="4" fill="#0d0d0d" stroke={borderColor} strokeWidth="2" />

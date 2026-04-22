@@ -1,86 +1,87 @@
 <div align="center">
-  
-# 🚀 LLMeter
-**The Ultimate Local LLM Hardware Benchmark & Model Fit Analyzer**
 
-[![React](https://img.shields.io/badge/React-18.x-blue?style=flat-square&logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+<img src="public/banner.png" alt="LLMeter Banner" width="100%">
 
-*Stop guessing if an LLM will run on your machine. Benchmark your hardware, analyze memory spikes, and get tailored quantization recommendations in seconds.*
+# 🕹️ LLMeter: Industrial Hardware Benchmark
+**The Definitive Command Station for Local LLM Readiness**
+
+[![Live Demo](https://img.shields.io/badge/LIVE-DEMO-22c55e?style=for-the-badge&logo=github)](https://dotusmanali.github.io/llmeter/)
+[![MIT License](https://img.shields.io/badge/License-MIT-white?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/Version-1.0.0--Industrial-22c55e?style=for-the-badge)](https://github.com/dotusmanali/llmeter)
+
+---
+
+### *Stop Guessing. Start Auditing.*
+LLMeter is a browser-native "Industrial Command Station" that benchmarks your hardware to predict Local LLM performance with surgical precision. It transforms raw system specs into an authoritative **Neural Fit Matrix**.
+
+[**Launch Command Station**](https://dotusmanali.github.io/llmeter/)
 
 </div>
 
 ---
 
-## ⚡ What is LLMeter?
-**LLMeter** is a browser-based hardware benchmarking tool designed specifically for the Local AI ecosystem. It runs precise micro-benchmarks on your CPU, memory, and disk to generate a **Real Performance Factor**, instantly telling you which Large Language Models (LLMs) will run gracefully on your device and which ones will melt your CPU.
+## ⚡ The Industrial Edge
 
-No more downloading 15GB models only to find out they crash on load.
+LLMeter isn't just a benchmark; it's a high-fidelity diagnostic environment. Designed with an **Industrial Command Station** aesthetic, it provides a cinematic experience from boot to audit.
 
-## ✨ Key Features
+### 🛠️ Key Capabilities
 
-- 🏎️ **Real Micro-Benchmarks:** Runs actual WebAssembly SIMD operations, memory bandwidth tests, and disk read estimates to calculate your exact hardware capabilities.
-- 🧠 **Multi-Quantization Fit Analyzer:** Cross-references your available RAM against a massive matrix of models (Llama 3, Qwen 2.5, Mistral, Gemma, Phi-3) and their specific quantization profiles (q2_k to q8_0).
-- 📊 **Loading Strategy Planner:** Predicts RAM spikes (up to 1.25x model size) and recommends whether you can load a model directly into memory or if you need to rely on chunked loading.
-- 🔌 **Seamless Ollama Integration:** Connects directly to your local `localhost:11434` instance to analyze your currently installed models and suggest upgrades or alternative quantizations.
-- ⏱️ **Tokens/Sec Estimation:** Provides realistic inference speed estimates (Tokens per Second) by factoring in your CPU architecture (AVX2, NEON), memory bandwidth, and GPU capabilities.
-- 🔒 **100% Privacy-Focused:** Everything runs locally. No accounts, no cloud sync, no data harvesting.
-
-## 🛠️ Tech Stack
-
-- **Frontend:** React, Vite, Tailwind CSS, shadcn/ui
-- **State Management:** Zustand
-- **Architecture:** Clean, standalone Vite + React structure
-- **Design:** Premium Dark Mode UI, JetBrains Mono for data, Inter for typography
-
-## 🚀 Getting Started
-
-### Prerequisites
-- [Node.js](https://nodejs.org/en/download/) (v20+ recommended)
-- [pnpm](https://pnpm.io/installation) (v9+)
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/dotusmanali/llmeter.git
-   cd llmeter
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   pnpm install
-   ```
-
-3. **Start the development server:**
-   ```bash
-   pnpm -C artifacts/llmeter run dev
-   ```
-
-4. **Open your browser:**
-   Navigate to `http://localhost:5173` to see LLMeter in action!
-
-## 📸 Screenshots
-
-*(Add screenshots of your Dashboard, Benchmark progress, and Model Fit Table here)*
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+- **🌀 Cinematic Audit Sequence:** A terminal-driven initialization that feels like starting up a mainframe.
+- **🗺️ Reactive Hardware Blueprint:** A blueprint-style motherboard visualizer with animated data bus traces and real-time thermal stress mapping.
+- **📊 Real Performance Factor (RPF):** Moves beyond static specs. We run JS-Compute loops, Memory Bandwidth bursts, and Storage IPC tests to see how your machine *actually* handles heavy loads.
+- **🧩 Neural Fit Matrix:** Instantly see which models (Llama 3, Qwen 2.5, Gemma) will fit in your RAM, factoring in **1.25x memory spikes** and specific quantization levels (q2_k to q8_0).
+- **🚀 Tokens/Sec HUD:** Realistic inference speed estimates based on SIMD detection (AVX2, NEON), architecture, and memory throughput.
+- **🔌 Ollama Pulse:** Real-time connectivity to your local Ollama instance to audit installed models and suggest optimal upgrades.
 
 ---
+
+## 📸 Intelligence Gallery
+
+> [!TIP]
+> Visit the [Live Demo](https://dotusmanali.github.io/llmeter/) to see the cinematic transitions, scanlines, and CRT effects in action.
+
+---
+
+## 🚦 Getting Started
+
+### Prerequisites
+- **Node.js** v20+
+- **pnpm** v9+
+
+### Quick Start
+```bash
+# 1. Clone the intelligence repository
+git clone https://github.com/dotusmanali/llmeter.git
+cd llmeter
+
+# 2. Synchronize dependencies
+pnpm install
+
+# 3. Launch Development Console
+pnpm dev
+```
+
+---
+
+## 🏗️ Technical Architecture
+
+LLMeter is built for speed, precision, and privacy.
+
+- **Engine:** Pure JavaScript/WebAssembly micro-benchmarks (Zero side effects).
+- **UI:** React + Framer Motion (Cinematic industrial animations).
+- **Style:** Tailwind CSS v4 (Industrial Design System).
+- **Privacy:** 100% Client-Side. No telemetry leaves your machine.
+
+---
+
+## 📜 Neural License
+
+Distributed under the **MIT License**. See `LICENSE` for the legal protocol.
+
+---
+
 <div align="center">
-  <i>Built with ❤️ for the Local AI Community.</i>
+  <img src="https://img.shields.io/badge/BUILT_BY-GOOGLE_ANTIGRAVITY-22c55e?style=for-the-badge" alt="Built by Antigravity">
+  <br/>
+  <i>Engineered for the Local AI Frontier.</i>
 </div>
