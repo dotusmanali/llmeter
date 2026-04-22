@@ -14,6 +14,35 @@ import { downloadJSON, downloadText, formatFullReport } from "../lib/export";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { BootSequence } from "../components/BootSequence";
+import { useSoundEngine } from "../lib/sounds";
+
+function LiveTelemetryFeed({ delay = 0 }: { delay?: number }) {
+  const [data, setData] = useState<number[]>([]);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setData(prev => {
+        const next = [...prev, Math.random() * 100];
+        return next.length > 30 ? next.slice(1) : next;
+      });
+    }, 150 + Math.random() * 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="flex items-end gap-1 h-8 w-full opacity-30">
+      {data.map((val, i) => (
+        <motion.div 
+          key={i} 
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          className="bg-[#22c55e] w-0.5 rounded-t-sm origin-bottom" 
+          style={{ height: `${val}%` }} 
+        />
+      ))}
+    </div>
+  );
+}
 
 const TIER_DESC: Record<string, string> = {
   Powerhouse: "Runs 13B+ models comfortably",
@@ -44,6 +73,7 @@ export default function Dashboard() {
   const { phase, score, tps, device, perf, effectiveRam, needsRamModal, lastRun, telemetry } =
     useBenchmarkStore();
   const { run, continueAfterRam } = useBenchmark();
+  const { playClick } = useSoundEngine();
   const [showBoot, setShowBoot] = useState(true);
 
   // Skip boot if already seen or if we're not in idle
@@ -201,13 +231,18 @@ export default function Dashboard() {
               </div>
 
               <button
-                onClick={run}
-                className="relative group px-16 py-5 bg-[#22c55e] text-black font-black uppercase tracking-[0.3em] rounded transition-all hover:bg-white shadow-[0_0_50px_rgba(34,197,94,0.2)]"
+                onClick={() => { playClick(); run(); }}
+                className="relative group px-16 py-5 bg-[#22c55e] text-black font-black uppercase tracking-[0.3em] rounded transition-all hover:bg-white shadow-[0_0_50px_rgba(34,197,94,0.2)] industrial-border"
               >
                 Launch_Diagnostic
                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-white" />
                 <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-white" />
               </button>
+
+              <div className="w-64">
+                <LiveTelemetryFeed />
+                <p className="text-[7px] font-mono text-[#22c55e]/40 uppercase tracking-[0.4em] text-center mt-2">Kernel_Heartbeat_Signal</p>
+              </div>
 
               {lastRun && (
                 <div className="mt-8 flex items-center gap-3 opacity-40">

@@ -132,9 +132,23 @@ export function HardwareMap() {
         {/* Diagnostic Metadata Labels */}
         <g className="opacity-0 group-hover:opacity-100 transition-opacity duration-500">
            <text x="140" y="55" fontSize="5" fill={activeColor} className="font-mono uppercase opacity-40">Core_Temp: 42.4C</text>
+           <text x="140" y="48" fontSize="5" fill={activeColor} className="font-mono uppercase opacity-40">Vcore: 1.18V</text>
            <text x="220" y="45" fontSize="5" fill={activeColor} className="font-mono uppercase opacity-40">ECC: ENABLED</text>
+           <text x="220" y="38" fontSize="5" fill={activeColor} className="font-mono uppercase opacity-40">Clock: 3200MT/s</text>
            <text x="60" y="145" fontSize="5" fill={activeColor} className="font-mono uppercase opacity-40">PCIe: x16_GEN4</text>
+           <text x="60" y="138" fontSize="5" fill={activeColor} className="font-mono uppercase opacity-40">Bandwidth: 32GB/s</text>
         </g>
+
+        {/* Voltage Ripple Traces */}
+        <motion.path 
+          d="M 20 200 L 380 200" 
+          stroke={activeColor} 
+          strokeWidth="0.5" 
+          strokeOpacity="0.05"
+          animate={{ strokeDashoffset: [0, 40] }}
+          strokeDasharray="2 10"
+          transition={{ duration: 0.5, repeat: Infinity, ease: "linear" }}
+        />
 
         {/* Status Indicators */}
         <circle cx="40" cy="40" r="2" fill={phase === "done" ? activeColor : "#333"} />

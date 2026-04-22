@@ -2,6 +2,7 @@ import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { Nav } from "@/components/Nav";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 import Dashboard from "@/pages/Dashboard";
 import Benchmark from "@/pages/Benchmark";
 import Device from "@/pages/Device";
@@ -12,10 +13,20 @@ import Compare from "@/pages/Compare";
 import History from "@/pages/History";
 import Share from "@/pages/Share";
 
-function NotFound() {
+function ParallaxBackground() {
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <p className="text-[#64748b]">Page not found.</p>
+    <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="absolute inset-0 bg-grid opacity-[0.03]" />
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ 
+          opacity: [0.02, 0.04, 0.02],
+          scale: [1, 1.1, 1],
+          rotate: [0, 1, 0]
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-0 parallax-grid opacity-[0.02]"
+      />
     </div>
   );
 }
@@ -25,8 +36,6 @@ function Router() {
   
   return (
     <div className="relative z-10">
-      <div className="terminal-crt-lines" />
-      <div className="terminal-vignette" />
       <Nav />
       <main className="container mx-auto px-4 py-8 relative z-20">
         <Switch>
@@ -63,7 +72,6 @@ function Router() {
 function App() {
   const [crtEnabled, setCrtEnabled] = useState(true);
 
-  // Allow toggling CRT with a hidden shortcut (Ctrl+Shift+L for Legacy)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'L') {
@@ -76,8 +84,7 @@ function App() {
 
   return (
     <div className={`min-h-screen bg-[#0a0a0a] text-slate-200 selection:bg-[#22c55e] selection:text-black relative overflow-hidden ${crtEnabled ? 'terminal-screen' : ''}`}>
-      {/* Global Industrial Grid */}
-      <div className="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none" />
+      <ParallaxBackground />
       
       {crtEnabled && (
         <>
